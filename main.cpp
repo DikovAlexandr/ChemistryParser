@@ -6,7 +6,8 @@
 #include <map>
 
 using namespace std;
-// Разбиение формулы поэлементно с учетом коэфиициентов
+
+// Разбиение формулы поэлементно с учетом коэффициентов
 vector<pair<string, int>> splitter(string s) {
     string formula = s;
     vector<pair<string, int>> elements;
@@ -24,40 +25,41 @@ vector<pair<string, int>> splitter(string s) {
             elements[index].first += formula[0];
         if (isdigit(formula[0]))
             elements[index].second = int(formula[0]) - 48;
-        if (formula[0] == '(') brackets = true;
-        if (formula[0] == ')') brackets = false;
-        if (!brackets && jndex>0 && isdigit(formula[0]))
-            while (jndex) {
-                elements[index - jndex].second *= int(formula[0]) - 48;
-                jndex--;
+        if (formula[0] == '(')
+            brackets = true;
+        if (formula[0] == ')') {
+            brackets = false;
+            if (isdigit(formula[1])) {
+                formula.erase(0, 1);
+                for (; jndex; jndex--)
+                    elements[index - jndex + 1].second *= int(formula[0]) - 48;
             }
+        }
         formula.erase(0, 1);
     }
     return elements;
 }
+
 // Вывод таблицы входящих в соединение элементов
-void printElements(const vector<pair<string, int>>& elements) {
+void printElements(const vector<pair<string, int>> &elements) {
     for (auto &element: elements)
         cout << element.first << "  " << element.second << endl;
 }
+
 // Нахождение массы соединения
-double getMass(const vector<pair<string, int>>& elements, const map<string, double>& element_m) {
-    double M=0;
-    for (const auto& i: elements) {
-        for (const auto& j:element_m) {
-            if (i.first==j.first) M+=j.second*i.second;
-        }
-    }
+double getMass(const vector<pair<string, int>> &elements, const map<string, double> &element_m) {
+    double M = 0;
+    for (const auto &i: elements)
+        for (const auto &j: element_m)
+            if (i.first == j.first)
+                M += j.second * i.second;
     return M;
 }
 
 int main() {
-    string substance;
-    cout  << "Enter you chemical substance:\n";
-    getline(cin, substance);
-    vector<pair<string, int>> elements;
-    elements = splitter(substance);
-    printElements(elements);
+    vector<string> substance;
+    vector<double> masses;
+    int n;
     map<string, double> element_m;
     {
         element_m["Ac"] = 227.028;
@@ -164,7 +166,31 @@ int main() {
         element_m["Zn"] = 65.39;
         element_m["Zr"] = 91.224;
     }
-    cout << getMass(elements, element_m);
-    cout << "What value do you need to find?";
+    cout << "How many elements are in your mixture?" << endl;
+    cin >> n;
+    cout << "Enter you chemical substances in different lines:" << endl;
+    vector<pair<string, int>> elements;
+    for (int i = 0; i < n; i++) {
+        cin >> substance[i];
+        elements = splitter(substance[i]);
+        //printElements(elements);
+        masses[i] = getMass(elements, element_m);
+    }
+    cout << "What value do you need to find?" << endl
+         << "Are you entering mole fractions and want to find mass fractions? - 1" << endl
+         << "Are you entering mass fractions and want to find mole fractions? - 2" << endl;
+    int marker;
+    cin >> marker;
+    if (marker == 1) {};
+    if (marker == 2) {};
+
+    /////////////////////////////////////////////////////////////////////////////////////////////
+    // Считываем количество веществ, считываем их формулы, находим молекулярные массы          //
+    // Вводятся мольные доли - находятся массовые ИЛИ вводятся массовые - находятся молярные   //
+    // Массовая доля: w(элемента) = m(элемента) / m(суммв масс всех веществ) * 100             //
+    // Мольная доля: x(элеманта) = n(элемента) / n(сумма количества вещества всех компонентов) //
+    // Количество вещества: n(элемента) = m(элемента) / M(вещества)                            //
+    /////////////////////////////////////////////////////////////////////////////////////////////
+
     return 0;
 }
