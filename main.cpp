@@ -13,17 +13,13 @@ void massCase(vector<double> massesOfSubstance, vector<string> intoSubstance, in
     vector<double> moleElements(num);
     vector<double> massFractions(num);
     vector<double> n(num);
-    double massOfAll = 0;
+    double massOfAll = 0, moleOfAll=0;
     cout << "Enter the mole fractions of substances in the same order" << endl;
     for (int i = 0; i < num; i++) cin >> moleFractions[i];
-    n[0] = 1; // We consider the amount of one of the substances to be equal to one
-    n[1] = 1 / moleFractions[1] - n[0];
+    for (int i = 0; i < num; i++) moleOfAll += massesOfSubstance[i]*moleFractions[i];
+    cout << moleOfAll << endl;
     for (int i = 0; i < num; i++) {
-        massElements[i] = n[i] * massesOfSubstance[i];
-        massOfAll += massElements[i];
-    }
-    for (int i = 0; i < num; i++) {
-        massFractions[i] = massElements[i] / massOfAll;
+        massFractions[i] = massesOfSubstance[i]*moleFractions[i] / moleOfAll;
         cout << intoSubstance[i] << " has mass fraction " << massFractions[i] << endl;
     }
 }
@@ -34,18 +30,15 @@ void moleCase(vector<double> massesOfSubstance, vector<string> intoSubstance, in
     vector<double> moleElements(num);
     vector<double> massFractions(num);
     vector<double> n(num);
-    double moleOfAll = 0;
+    double moleOfAll = 0, summ=0;
     cout << "Enter the mass fractions of substances in the same order" << endl;
     for (int i = 0; i < num; i++) cin >> massFractions[i];
-    massElements[0] = 100 * massFractions[0];
-    massElements[1] = 100 - massFractions[1];
+    for (int i = 0; i < num; i++) summ += massFractions[i]/massesOfSubstance[i];
+    moleOfAll = 1/summ;
+    cout << "Mixture mole mass " << moleOfAll << endl;
     for (int i = 0; i < num; i++) {
-        moleElements[i] = massElements[i] / massesOfSubstance[i];
-        moleOfAll += moleElements[i];
-    }
-    for (int i = 0; i < num; i++) {
-        massFractions[i] = massElements[i] / moleOfAll;
-        cout << intoSubstance[i] << " has mole fraction " << massFractions[i] << endl;
+        moleFractions[i] = massFractions[i] * moleOfAll / massesOfSubstance[i];
+        cout << intoSubstance[i] << " has mole fraction " << moleFractions[i] << endl;
     }
 }
 
@@ -211,8 +204,8 @@ int main() {
         elementAtomicMass["Zr"] = 91.224;
     }
     cout << "How many elements are in your mixture?" << endl;
-    //cin >> num;
-    num = 2;
+    cin >> num;
+    //num = 2;
     cout << "Enter you chemical substances in different lines:" << endl;
     vector<pair<string, int>> elements;
     for (int i = 0; i < num; i++) {
